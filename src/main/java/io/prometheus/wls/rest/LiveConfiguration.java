@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The repository for the current exporter configuration.
@@ -114,7 +115,7 @@ class LiveConfiguration {
      * @return an array of hierarchical mbean queries
      */
     static MBeanSelector[] getQueries() {
-        return getConfig().getQueries();
+        return getConfig().getEffectiveQueries();
     }
 
     /**
@@ -135,13 +136,14 @@ class LiveConfiguration {
         if (timestamp != null) return;
         
         InputStream configurationFile = getConfigurationFile(servletConfig);
-        if (configurationFile != null)
-            initialize(configurationFile);
+        initialize(Optional.ofNullable(configurationFile)
+                .map(ExporterConfig::loadConfig)
+                .orElse(ExporterConfig.createEmptyConfig()));
     }
 
-    private static void initialize(InputStream configurationFile) {
-        config = ExporterConfig.loadConfig(configurationFile);
-        installUpdater(config.getQuerySyncConfiguration());
+    private static void initialize(ExporterConfig config) {
+        LiveConfiguration.config = config;
+        installUpdater(LiveConfiguration.config.getQuerySyncConfiguration());
         timestamp = 0L;
     }
 

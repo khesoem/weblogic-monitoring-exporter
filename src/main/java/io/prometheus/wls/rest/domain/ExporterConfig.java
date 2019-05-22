@@ -40,6 +40,13 @@ public class ExporterConfig {
     private String domainName;
 
     /**
+     * Creates an empty configuration.
+     */
+    public static ExporterConfig createEmptyConfig() {
+        return new ExporterConfig(new HashMap<>());
+    }
+
+    /**
      * Loads a YAML configuration to create a new configuration object.
      * @param inputStream a reader of a YAML configuration.
      * @return an ExporterConfig object that matches the parsed YAML
@@ -85,6 +92,16 @@ public class ExporterConfig {
     }
 
     /**
+     * Returns the queries needed to create the metrics. May not be the same as the result from {@link #getQueries()}
+     * @return an array of mbean selectors.
+     */
+    public MBeanSelector[] getEffectiveQueries() {
+        if (queries == null) return NO_QUERIES;
+
+        return withPossibleDomainNameQuery(Arrays.stream(queries)).toArray(MBeanSelector[]::new);
+    }
+
+    /**
      * Returns an array of the mbean selector objects which correspond to the queries section
      * in the YAML.
      * @return an array of mbean selectors.
@@ -92,7 +109,7 @@ public class ExporterConfig {
     public MBeanSelector[] getQueries() {
         if (queries == null) return NO_QUERIES;
 
-        return withPossibleDomainNameQuery(Arrays.stream(queries)).toArray(MBeanSelector[]::new);
+        return queries;
     }
 
     private Stream<MBeanSelector> withPossibleDomainNameQuery(Stream<MBeanSelector> stream) {

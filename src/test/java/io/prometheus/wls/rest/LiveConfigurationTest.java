@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static io.prometheus.wls.rest.InMemoryFileSystem.withNoParams;
@@ -95,6 +94,13 @@ public class LiveConfigurationTest {
 
     @Test
     public void whenInitNotCalled_haveNoQueries() {
+        assertThat(LiveConfiguration.hasQueries(), is(false));
+    }
+
+    @Test
+    public void whenInitCalledWithNoConfig_haveNoQueries() {
+        LiveConfiguration.init(withNoParams());
+        
         assertThat(LiveConfiguration.hasQueries(), is(false));
     }
 
