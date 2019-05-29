@@ -7,6 +7,7 @@ package io.prometheus.wls.rest;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import io.prometheus.wls.rest.domain.ExporterConfig;
 import io.prometheus.wls.rest.domain.MBeanSelector;
 import io.prometheus.wls.rest.domain.QuerySyncConfiguration;
@@ -182,7 +183,11 @@ class LiveConfiguration {
     }
 
     private static JsonObject toJsonObject(String response) {
-        return new JsonParser().parse(response).getAsJsonObject();
+        try {
+            return new JsonParser().parse(response).getAsJsonObject();
+        } catch (JsonSyntaxException e) {
+            throw new RuntimeException("Error parsing:\n" + response, e);
+        }
     }
 
     /**
