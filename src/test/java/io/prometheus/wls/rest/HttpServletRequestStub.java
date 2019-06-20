@@ -113,6 +113,16 @@ abstract class HttpServletRequestStub implements HttpServletRequest {
     }
 
     @Override
+    public String getLocalName() {
+        return HOST;
+    }
+
+    @Override
+    public int getLocalPort() {
+        return PORT;
+    }
+
+    @Override
     public String getContextPath() {
         return contextPath;
     }
