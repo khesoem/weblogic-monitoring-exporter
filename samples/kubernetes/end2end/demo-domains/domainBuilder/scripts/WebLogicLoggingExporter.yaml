@@ -1,0 +1,7 @@
+publishHost:  elasticsearch
+publishPort:  9200
+domainUID:  domain1
+weblogicLoggingExporterEnabled: true
+weblogicLoggingIndexName:  domain1-wls
+weblogicLoggingExporterSeverity: Debug
+weblogicLoggingExporterBulkSize: 1
