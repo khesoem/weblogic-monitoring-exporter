@@ -20,3 +20,5 @@ ${WDT_HOME}/weblogic-deploy/bin/createDomain.sh \
     -model_file ${SCRIPTS_DIR}/simple-topology.yaml \
     -archive_file ${SCRIPTS_DIR}/archive.zip \
     -variable_file ${SCRIPTS_DIR}/domain.properties
+
+cp ${SCRIPTS_DIR}/WebLogicLoggingExporter.yaml $DOMAIN_PARENT/domain1/config

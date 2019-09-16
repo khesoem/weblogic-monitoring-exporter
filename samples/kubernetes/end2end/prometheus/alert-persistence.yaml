@@ -14,7 +14,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: "%PV_ROOT%/monitoring/alertmanager"
+    path: "/scratch/pv/monitoring/alertmanager"
 
 ---
 apiVersion: v1

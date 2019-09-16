@@ -4,42 +4,52 @@
 
 set -e  # Exit immediately if a command exits with a non-zero status.
 
-WDT_VERSION=0.24
+METRIC_EXPORTER_VERSION=1.1.0
+LOGGING_EXPORTER_VERSION=1.0.0
+WDT_VERSION=1.3.0
 
-CUR_DIR="$(dirname "$(readlink -f "$0")")" # get the absolute path of this file's folder
-PRJ_ROOT=${CUR_DIR}/../../../../..
-TMP_DIR=${CUR_DIR}/tmp
+TMP_DIR=$PWD/tmp
+APP_DIR=${TMP_DIR}/archive/wlsdeploy/applications
+LIB_DIR=${TMP_DIR}/archive/wlsdeploy/classpathLibraries
 
 # Create two webapps: testwebapp and wls-exporter.
 function createArchive() {
-  mkdir -p ${TMP_DIR}/archive/wlsdeploy/applications
+  mkdir -p ${APP_DIR}
+  mkdir -p ${LIB_DIR}
 
   echo 'Build the test webapp...'
-  cd test-webapp && mvn clean install && cd ..
-  cp test-webapp/target/testwebapp.war ${TMP_DIR}/archive/wlsdeploy/applications/testwebapp.war
+  cd test-webapp/src/main/webapp
+  jar -cf ${APP_DIR}/testwebapp.war .
+  cd -
 
-  echo 'Build the metrics exporter...'
-  cd $PRJ_ROOT
-  mvn clean install
-  cd webapp
-  mvn clean package -Dconfiguration=${CUR_DIR}/../../dashboard/exporter-config.yaml
-  cd $CUR_DIR 
-  cp $PRJ_ROOT/webapp/target/wls-exporter.war \
-     ${TMP_DIR}/archive/wlsdeploy/applications/wls-exporter.war
+  echo 'Download the metrics exporter...'
+  cd $TMP_DIR
+  wget https://github.com/oracle/weblogic-monitoring-exporter/releases/download/v${METRIC_EXPORTER_VERSION}/get${METRIC_EXPORTER_VERSION}.sh
+  chmod +x get${METRIC_EXPORTER_VERSION}.sh
+  ./get${METRIC_EXPORTER_VERSION}.sh ../../../dashboard/exporter-config.yaml
+  cp wls-exporter.war ${APP_DIR}
+  cd -
+
+  echo 'Download the logging exporter...'
+  wget -O ${LIB_DIR}/wls-logging-exporter.jar \
+     https://github.com/oracle/weblogic-logging-exporter/releases/download/v1.0.0/weblogic-logging-exporter-${LOGGING_EXPORTER_VERSION}.jar
+
+  wget -O ${LIB_DIR}/snakeyaml-1.23.jar \
+     http://repo1.maven.org/maven2/org/yaml/snakeyaml/1.23/snakeyaml-1.23.jar
 
   echo 'Build the WDT archive...'
   jar cvf ${TMP_DIR}/archive.zip  -C ${TMP_DIR}/archive wlsdeploy
+
   rm -rf ${TMP_DIR}/archive
 }
 
 function cleanTmpDir() {
-  rm -rf ${CUR_DIR}/test-webapp/target
-  rm -rf ${PRJ_ROOT}/webapp/target
+  rm -rf test-webapp/target
   rm -rf ${TMP_DIR}
 }
 
 function buildImage() {
-  cp ${CUR_DIR}/scripts/* ${TMP_DIR}
+  cp scripts/* ${TMP_DIR}
   echo "Update domain.properties with cmdline arguments..."
   sed -i "s/^DOMAIN_NAME.*/DOMAIN_NAME=$1/g" ${TMP_DIR}/domain.properties
   sed -i "s/^ADMIN_USER.*/ADMIN_USER=$2/g" ${TMP_DIR}/domain.properties
@@ -53,7 +63,7 @@ function buildImage() {
 
   imageName=$1-image:1.0
   echo "Build the domain image $imageName..."
-  docker build $CUR_DIR --force-rm -t $imageName
+  docker build . --force-rm -t $imageName
 }
 
 if [ "$#" != 5 ] ; then
@@ -65,3 +75,4 @@ cleanTmpDir
 createArchive
 buildImage $@
 cleanTmpDir
+

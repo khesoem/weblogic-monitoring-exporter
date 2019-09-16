@@ -75,6 +75,10 @@ resources:
                         DefaultTargetingEnabled: true
                         JNDIName: dq1
                         ResetDeliveryCountOnForward: true
+    StartupClass:
+        LoggingExporterStartupClass:
+            Target: '@@PROP:CLUSTER_NAME@@'
+            ClassName: weblogic.logging.exporter.Startup
 appDeployments:
     Application:
         'test-webapp':

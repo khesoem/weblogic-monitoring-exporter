@@ -14,7 +14,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: "%PV_ROOT%/monitoring/prometheus"
+    path: "/scratch/pv/monitoring/prometheus"
 
 ---
 apiVersion: v1
