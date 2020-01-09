@@ -7,8 +7,7 @@ set -e  # Exit immediately if a command exits with a non-zero status.
 WDT_VERSION=0.24
 MONITORING_EXPORTER_VERSION=1.1.1
 
-#CUR_DIR="$(dirname "$(readlink -f "$0")")" # get the absolute path of this file's folder
-CUR_DIR=$(PWD) # get the absolute path of this file's folder
+CUR_DIR="$(dirname "$(readlink -f "$0")")" # get the absolute path of this file's folder
 PRJ_ROOT=${CUR_DIR}/../../../../..
 TMP_DIR=${CUR_DIR}/tmp
 
@@ -18,6 +17,7 @@ function createArchive() {
 
   echo 'Build the test webapp...'
   cd test-webapp && mvn clean install && cd ..
+  chmod 777 test-webapp/target/testwebapp.war
   cp test-webapp/target/testwebapp.war ${TMP_DIR}/archive/wlsdeploy/applications/testwebapp.war
 
   echo "Download the metrics exporter webapp from ://github.com/oracle/weblogic-monitoring-exporter/releases/download/v${MONITORING_EXPORTER_VERSION}/get${MONITORING_EXPORTER_VERSION}.sh..."
