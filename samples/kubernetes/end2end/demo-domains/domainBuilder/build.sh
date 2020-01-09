@@ -17,7 +17,7 @@ function createArchive() {
 
   echo 'Build the test webapp...'
   cd test-webapp && mvn clean install && cd ..
-  chmod 777 test-webapp/target/testwebapp.war
+  sudo chmod 777 test-webapp/target/testwebapp.war
   cp test-webapp/target/testwebapp.war ${TMP_DIR}/archive/wlsdeploy/applications/testwebapp.war
 
   echo "Download the metrics exporter webapp from ://github.com/oracle/weblogic-monitoring-exporter/releases/download/v${MONITORING_EXPORTER_VERSION}/get${MONITORING_EXPORTER_VERSION}.sh..."
