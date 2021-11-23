@@ -47,6 +47,7 @@
         <version.plugin.surefire>3.0.0-M5</version.plugin.surefire>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+        <dependency-check-version>6.1.5</dependency-check-version>
     </properties>
 
     <build>
@@ -73,8 +74,35 @@
                         <useModulePath>false</useModulePath>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check-version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-version}</version>
+                <configuration>
+                    <skip>${skip.dependency-check}</skip>
+                    <skipTestScope>true</skipTestScope>
+                    <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
+                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                    <formats>
+                        <format>HTML</format>
+                        <format>CSV</format>
+                    </formats>
+                    <!--
+                    <suppressionFiles>
+                        <suppressionFile>build-tools/dependency-check/dependency-check-suppression.xml</suppressionFile>
+                    </suppressionFiles>
+                    -->
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencyManagement>
