@@ -2,6 +2,7 @@
 // Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 package com.oracle.wls.exporter.webapp;
+import static MatcherAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
